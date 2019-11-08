@@ -1,0 +1,24 @@
+{
+  "name": "eva-workflow-stepfunctions",
+  "version": "1.0.0",
+  "description": "Demo EVA Workflow as AWS StepFunction",
+  "main": "index.js",
+  "dependencies": {
+    "serverless": "^1.57.0",
+    "serverless-pseudo-parameters": "^2.5.0",
+    "serverless-step-functions": "^2.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serverless",
+    "aws",
+    "workflow",
+    "stepfunctions",
+    "automate-all-the-things"
+  ],
+  "author": "Chris Shenton",
+  "license": "ISC"
+}

@@ -1,0 +1,100 @@
+service: evaworkflow
+# org: vstudios
+# app: evaworkflow
+
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: python3.7
+
+package:
+  exclude:
+    - "*~"
+    - .git/**
+    - .venv*/**
+    - Makefile
+    - README.md
+    - README.rst
+    - docs/**
+    - node_modules/**
+    - package-lock.json
+    - package.json
+    - test-results/**
+    - tests/**
+    - venv/**
+
+
+functions:
+  hello:
+    handler: handler.hello
+
+stepFunctions:
+  stateMachines:
+    EvaLogistics:
+      #name: ${self:provider.environment.STEPFUNCTION_NAME}
+      definition:
+        Comment: Hairy workflow based on Irina's PPT
+        StartAt: New hrdw requested by hrdw provider
+        States:
+          New hrdw requested by hrdw provider:
+            Type: Pass
+            Next: Hrdw approved by Logistics Management
+          Hrdw approved by Logistics Management:
+            Type: Pass
+            Next: All requested data provided
+          # TODO how to handle "Hrdw currently on plan"?
+          All requested data provided:
+            Comment: decision yes/no
+            Type: Pass
+            # TODO: Conditionalize, now use happy path for next
+            Next: Hrdw added to CRS bucket priority list
+          Hrdw added to CRS bucket priority list:
+            Type: Pass
+            # TODO: two branches out, how to handle?
+            Next: Logistics Integrator contacts drdw provider for part data O/D confimr
+          Logistics Integrator contacts drdw provider for part data O/D confimr:
+            Type: Pass
+            # TODO: two branches out, how to handle?
+            Next: Hrdw MR submitted to CRS bucket
+          Hrdw MR submitted to CRS bucket:
+            Type: Pass
+            Next: MAPI recommends flight for hrdw
+          MAPI recommends flight for hrdw:
+            Type: Pass
+            Next: Meets provided requirements?
+          Meets provided requirements?:
+            Type: Pass
+            # TODO Conditinoal yes/no
+            Next: Logistics Integrators approve to move hrdw to flight ESEL
+          Logistics Integrators approve to move hrdw to flight ESEL:
+            Type: Pass
+            Next: OC coordinator move to fligh w/ MAPI
+          OC coordinator move to fligh w/ MAPI:
+            Type: Pass
+            Next: Hrdw moves to flight ESEL
+          Hrdw moves to flight ESEL:
+            Type: Pass
+            Next: Logistics Integrator presents flight ESEL status to boards, panels & IPTs
+          Logistics Integrator presents flight ESEL status to boards, panels & IPTs:
+            # TODO: two outputs and a input from the bottom
+            Type: Pass
+            Next: Hrdw updates requirements
+          Hrdw updates requirements:
+            Type: Pass
+            Next: Can still make flight?
+          Can still make flight?:
+            Type: Pass
+            # TODO conditional
+            Next: Flight ESEL approved pre-CoFR(L-10w)
+          Flight ESEL approved pre-CoFR(L-10w):
+            Type: Pass
+            End: true
+
+
+          # TaskFailed:
+          #   Type: Fail
+          #   Error: You have an unhandled error in your code
+          #   Cause: check the input to this state for the traceback
