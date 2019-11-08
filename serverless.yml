@@ -28,8 +28,8 @@ package:
 
 
 functions:
-  hello:
-    handler: handler.hello
+  MeetsProvidedRequirements:
+    handler: handler.meets_provided_requirements
 
 # Make all Choice status check for $.result == "Yes" for happy path, then
 # Execute with input: {"result": "Yes"} to flow through the happy path
@@ -100,6 +100,9 @@ stepFunctions:
             Next: MAPI recommends flight for hrdw
           MAPI recommends flight for hrdw:
             Type: Pass
+            # Pretend we do something then output stuff including random {"result": "Yes"|"No"}
+            #Type: Task
+            #Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-MeetsProvidedRequirements"
             Next: Meets provided requirements?
           Meets provided requirements?:
             Type: Choice

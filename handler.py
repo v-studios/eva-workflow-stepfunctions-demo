@@ -1,24 +1,15 @@
-import json
+#!/usr/bin/env python3
+import random
 
 
-def hello(event, context):
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
+def meets_provided_requirements(event, context):
+    """Randomly return Yes or No to drive state machine."""
+    return random.choice([{"result": "Yes",
+                           "requirements": ["Islay Single Malt", "California Zinfandel", "Texas BBQ"]},
+                          {"result": "No",
+                           "requirements": ["Budmilobe Ultra Lite", "McFood"]}])
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
 
-    return response
 
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
+if __name__ == "__main__":
+    print(meets_provided_requirements(None, None))
