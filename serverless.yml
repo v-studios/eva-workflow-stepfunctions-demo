@@ -31,34 +31,70 @@ functions:
   hello:
     handler: handler.hello
 
+# Make all Choice status check for $.result == "Yes" for happy path, then
+# Execute with input: {"result": "Yes"} to flow through the happy path
+
 stepFunctions:
   stateMachines:
     EvaLogistics:
-      #name: ${self:provider.environment.STEPFUNCTION_NAME}
       definition:
         Comment: Hairy workflow based on Irina's PPT
-        StartAt: New hrdw requested by hrdw provider
+        StartAt: Existing Hardware? 
         States:
+          Existing Hardware?:
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Hrdw currently on plan
+              - Variable: $.result
+                StringEquals: No
+                Next: New hrdw requested by hrdw provider
+          Hrdw currently on plan:
+            Type: Pass
+            Next: All requested data provided?
           New hrdw requested by hrdw provider:
             Type: Pass
             Next: Hrdw approved by Logistics Management
           Hrdw approved by Logistics Management:
             Type: Pass
-            Next: All requested data provided
+            Next: All requested data provided?
           # TODO how to handle "Hrdw currently on plan"?
-          All requested data provided:
-            Comment: decision yes/no
+          All requested data provided?:
+            Type: Choice
+            Choices:
+              # Put the happy past last so it renders more left-to-right
+              - Variable: $.result
+                StringEquals: No
+                Next: Hrdw added to watch list
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Hrdw added to CRS bucket priority list
+          Hrdw added to watch list:
             Type: Pass
-            # TODO: Conditionalize, now use happy path for next
-            Next: Hrdw added to CRS bucket priority list
+            Next: All requested data provided?
           Hrdw added to CRS bucket priority list:
             Type: Pass
             # TODO: two branches out, how to handle?
-            Next: Logistics Integrator contacts drdw provider for part data O/D confimr
-          Logistics Integrator contacts drdw provider for part data O/D confimr:
+            Next: Logistics Integrator contacts drdw provider for part data O/D confirm
+          Logistics Integrator contacts drdw provider for part data O/D confirm:
+            Type: Choice        # or is it parallel?
+            Choices:
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Hrdw MR submitted to CRS bucket
+              - Variable: $.result
+                StringEquals: No
+                Next: Hrdw added to CRS status chart (working ESEL)
+          Hrdw added to CRS status chart (working ESEL):
             Type: Pass
-            # TODO: two branches out, how to handle?
-            Next: Hrdw MR submitted to CRS bucket
+            Next: Logistics Integrator presents CRS status to boards, panels & IPTs
+          Logistics Integrator presents CRS status to boards, panels & IPTs:
+            Type: Pass
+            Next: Logistics Integrator post ESEL on ICE post approval
+          Logistics Integrator post ESEL on ICE post approval:
+            Type: Pass
+            End: true
           Hrdw MR submitted to CRS bucket:
             Type: Pass
             Next: MAPI recommends flight for hrdw
@@ -66,9 +102,26 @@ stepFunctions:
             Type: Pass
             Next: Meets provided requirements?
           Meets provided requirements?:
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                StringEquals: No
+                Next: Logistics integrators coorinate move w/ hrdw privder & logistics management
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Logistics Integrators approve to move hrdw to flight ESEL
+          Logistics integrators coorinate move w/ hrdw privder & logistics management:
             Type: Pass
-            # TODO Conditinoal yes/no
-            Next: Logistics Integrators approve to move hrdw to flight ESEL
+            Next: Move approved?
+          Move approved?:
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                StringEquals: No
+                Next: MAPI recommends flight for hrdw
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Logistics Integrators approve to move hrdw to flight ESEL
           Logistics Integrators approve to move hrdw to flight ESEL:
             Type: Pass
             Next: OC coordinator move to fligh w/ MAPI
