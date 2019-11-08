@@ -132,16 +132,29 @@ stepFunctions:
             Type: Pass
             Next: Logistics Integrator presents flight ESEL status to boards, panels & IPTs
           Logistics Integrator presents flight ESEL status to boards, panels & IPTs:
-            # TODO: two outputs and a input from the bottom
-            Type: Pass
-            Next: Hrdw updates requirements
+            # TODO: Unclear if this is choice or parallel, we'll use Choice
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Hrdw updates requirements
+              - Variable: $.result
+                StringEquals: No
+                Next: Flight ESEL approved pre-CoFR(L-10w)
           Hrdw updates requirements:
             Type: Pass
             Next: Can still make flight?
+          # TODO: Unclear whether Yes is supposed to go to Flight ESL
+          # or Logistics Integrator, so choose the termina Flight ESL.
           Can still make flight?:
-            Type: Pass
-            # TODO conditional
-            Next: Flight ESEL approved pre-CoFR(L-10w)
+            Type: Choice
+            Choices:
+              - Variable: $.result
+                StringEquals: Yes
+                Next: Flight ESEL approved pre-CoFR(L-10w)
+              - Variable: $.result
+                StringEquals: No
+                Next: Hrdw added to CRS status chart (working ESEL)
           Flight ESEL approved pre-CoFR(L-10w):
             Type: Pass
             End: true
