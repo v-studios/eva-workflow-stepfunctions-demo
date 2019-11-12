@@ -63,7 +63,6 @@ stepFunctions:
           All requested data provided?:
             Type: Choice
             Choices:
-              # Put the happy past last so it renders more left-to-right
               - Variable: $.result
                 StringEquals: No
                 Next: Hrdw added to watch list
@@ -101,19 +100,19 @@ stepFunctions:
           MAPI recommends flight for hrdw:
             Type: Pass
             # Pretend we do something then output stuff including random {"result": "Yes"|"No"}
-            #Type: Task
-            #Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-MeetsProvidedRequirements"
+            # Type: Task
+            # Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-MeetsProvidedRequirements"
             Next: Meets provided requirements?
           Meets provided requirements?:
             Type: Choice
             Choices:
               - Variable: $.result
                 StringEquals: No
-                Next: Logistics integrators coorinate move w/ hrdw privder & logistics management
+                Next: Logistics integrators coordinate move w/ hrdw privder & logistics management
               - Variable: $.result
                 StringEquals: Yes
                 Next: Logistics Integrators approve to move hrdw to flight ESEL
-          Logistics integrators coorinate move w/ hrdw privder & logistics management:
+          Logistics integrators coordinate move w/ hrdw privder & logistics management:
             Type: Pass
             Next: Move approved?
           Move approved?:
@@ -127,8 +126,8 @@ stepFunctions:
                 Next: Logistics Integrators approve to move hrdw to flight ESEL
           Logistics Integrators approve to move hrdw to flight ESEL:
             Type: Pass
-            Next: OC coordinator move to fligh w/ MAPI
-          OC coordinator move to fligh w/ MAPI:
+            Next: OC coordinator move to flight w/ MAPI
+          OC coordinator move to flight w/ MAPI:
             Type: Pass
             Next: Hrdw moves to flight ESEL
           Hrdw moves to flight ESEL:
