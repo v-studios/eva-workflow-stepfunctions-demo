@@ -4,7 +4,7 @@
   "description": "Demo EVA Workflow as AWS StepFunction",
   "main": "index.js",
   "dependencies": {
-    "serverless": "^1.57.0",
+    "serverless": "^3.25.1",
     "serverless-pseudo-parameters": "^2.5.0",
     "serverless-step-functions": "^2.11.0"
   },
